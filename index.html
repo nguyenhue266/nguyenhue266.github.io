@@ -32,6 +32,7 @@
         fetch(geojsonUrl)
             .then(response => response.json())
             .then(data => {
+                // Hiển thị lớp GeoJSON trên bản đồ
                 L.geoJSON(data, {
                     style: function (feature) {
                         return {
@@ -39,6 +40,9 @@
                             weight: 2, // Độ dày của viền
                             opacity: 1 // Độ mờ của viền
                         };
+                    },
+                    onEachFeature: function (feature, layer) {
+                        layer.bindPopup("<strong>" + feature.properties.name + "</strong>");
                     }
                 }).addTo(map);
             })
