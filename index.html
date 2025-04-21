@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebGIS Vietnam Provinces</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <style>
@@ -17,36 +18,34 @@
 <body>
     <div id="map"></div>
     <script>
-        // Khởi tạo bản đồ
-        var map = L.map('map').setView([21.0285, 105.8542], 13); // Tọa độ Hà Nội
+        // Khởi tạo bản đồ tại Hà Nội
+        var map = L.map('map').setView([21.0285, 105.8542], 6);
 
-        // Thêm tile layer (OpenStreetMap)
+        // Thêm tile layer OSM
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Đường dẫn đến file GeoJSON đã tải lên GitHub
-        var geojsonUrl = 'https://nguyenhue266.github.io/vietnamprovinces.geojson'; // Đảm bảo đường dẫn chính xác
+        // Đường dẫn RAW tới GeoJSON trên GitHub
+        var geojsonUrl = 'https://raw.githubusercontent.com/nguyenhue266/nguyenhue266.github.io/main/vietnamprovinces.geojson';
 
-        // Tải và hiển thị GeoJSON trên bản đồ
+        // Tải và hiển thị dữ liệu GeoJSON
         fetch(geojsonUrl)
             .then(response => response.json())
             .then(data => {
                 L.geoJSON(data, {
-                    style: function (feature) {
-                        return {
-                            color: "red",
-                            weight: 10,
-                            opacity: 1    
-                        };
+                    style: {
+                        color: "red",
+                        weight: 5,
+                        fillOpacity: 1
                     }
                 }).addTo(map);
             })
             .catch(error => {
-                console.error("Error loading GeoJSON file:", error);
+                console.error("Error loading GeoJSON:", error);
             });
 
-        // Thêm thanh tìm kiếm
+        // Thêm thanh tìm kiếm địa điểm
         L.Control.geocoder({
             defaultMarkGeocode: true
         }).addTo(map);
