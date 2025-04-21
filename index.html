@@ -32,8 +32,8 @@
         fetch(geojsonUrl)
             .then(response => response.json())
             .then(data => {
-                // Hiển thị lớp GeoJSON trên bản đồ
-                L.geoJSON(data, {
+                // Hiển thị lớp GeoJSON mới lên trên bản đồ
+                var geojsonLayer = L.geoJSON(data, {
                     style: function (feature) {
                         return {
                             color: "red", // Đổi màu viền thành đỏ
@@ -44,7 +44,10 @@
                     onEachFeature: function (feature, layer) {
                         layer.bindPopup("<strong>" + feature.properties.name + "</strong>");
                     }
-                }).addTo(map);
+                }).addTo(map); // Thêm lớp vào bản đồ
+
+                // Đảm bảo lớp GeoJSON này sẽ nằm trên đầu
+                map.addLayer(geojsonLayer);
             })
             .catch(error => {
                 console.error("Error loading GeoJSON file:", error);
