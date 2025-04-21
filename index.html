@@ -1,37 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basic WebGIS</title>
-    <!-- Liên kết CSS của Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <style>
-        /* CSS cho bản đồ */
-        #map {
-            height: 100vh;
-            width: 100%;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>WebGIS Hanoi - Chọn Vị Trí</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
-    <!-- Phần tử chứa bản đồ -->
-    <div id="map"></div>
+  <div id="map"></div>
 
-    <!-- Liên kết JavaScript của Leaflet -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script>
-        // Khởi tạo bản đồ
-        var map = L.map('map').setView([20.991688083825554, 105.7952797841214], 13); // Tọa độ Hà Nội, zoom level 13
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
-        // Thêm tile layer (OpenStreetMap)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+  <script>
+    // Tạo bản đồ trung tâm ở Hà Nội
+    var map = L.map('map').setView([21.0285, 105.8542], 13);
 
-        // Thêm marker cho Hà Nội
-        var marker = L.marker([21.0285, 105.8542]).addTo(map);
-        marker.bindPopup("<b>Hà Nội</b>").openPopup();
-    </script>
+    // Lớp nền OSM
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Marker mặc định ở Hà Nội
+    var marker = L.marker([21.0285, 105.8542]).addTo(map)
+      .bindPopup("Hà Nội").openPopup();
+
+    // Tạo thanh tìm kiếm
+    L.Control.geocoder({
+      defaultMarkGeocode: true
+    }).addTo(map);
+
+    // Cho phép chọn vị trí mới bằng click
+    map.on('click', function(e) {
+      var lat = e.latlng.lat.toFixed(6);
+      var lng = e.latlng.lng.toFixed(6);
+
+      // Xóa marker cũ nếu có
+      if (marker) {
+        map.removeLayer(marker);
+      }
+
+      // Thêm marker mới
+      marker = L.marker([lat, lng]).addTo(map)
+        .bindPopup("Vị trí đã chọn:<br>Lat: " + lat + "<br>Lng: " + lng)
+        .openPopup();
+    });
+  </script>
 </body>
 </html>
