@@ -4,51 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebGIS Vietnam Provinces</title>
-    <!-- Thư viện CSS của Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <!-- Thư viện CSS của leaflet-geopackage -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <style>
         #map {
             height: 100vh;
             width: 100%;
         }
     </style>
-    <!-- Thư viện JS của Leaflet -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <!-- Thư viện JS của leaflet-geopackage -->
-    <script src="https://unpkg.com/leaflet-geopackage@latest/dist/leaflet-geopackage.min.js"></script>
 </head>
 <body>
     <div id="map"></div>
     <script>
         // Khởi tạo bản đồ
-        var map = L.map('map').setView([21.0285, 105.8542], 13); // Tọa độ Hà Nội, zoom level 13
+        var map = L.map('map').setView([21.0285, 105.8542], 13); // Tọa độ Hà Nội
 
         // Thêm tile layer (OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Thêm marker cho Hà Nội
-        var marker = L.marker([21.0285, 105.8542]).addTo(map);
-        marker.bindPopup("<b>Hà Nội</b>").openPopup();
+        // Đường dẫn đến file GeoJSON đã tải lên GitHub
+        var geojsonUrl = 'https://nguyenhue266.github.io/vietnamprovinces.geojson'; // Đảm bảo đường dẫn chính xác
 
-        // Đường dẫn tới file GeoPackage (Thay đổi URL dưới đây cho đúng với đường dẫn file của bạn)
-        var geoPackageUrl = 'https://nguyenhue266.github.io/Vietnam_Provinces.jgpkg'; // Thay đổi URL này cho đúng với URL của file trên GitHub
-
-        // Sử dụng leaflet-geopackage để tải file GeoPackage và hiển thị trên bản đồ
-        var geopackageLayer = L.geoPackage({
-            file: geoPackageUrl,
-            onEachFeature: function (feature, layer) {
-                layer.bindPopup(feature.properties.name);  // Hiển thị tên tỉnh khi click vào
-            }
-        }).addTo(map);
-
-        // Đặt độ trong suốt cho lớp GeoPackage
-        geopackageLayer.setStyle({
-            fillOpacity: 0.4  // Độ trong suốt của các tỉnh, bạn có thể thay đổi giá trị này từ 0 (trong suốt hoàn toàn) đến 1 (không trong suốt)
-        });
+        // Tải và hiển thị GeoJSON trên bản đồ
+        fetch(geojsonUrl)
+            .then(response => response.json())
+            .then(data => {
+                L.geoJSON(data, {
+                    style: function (feature) {
+                        return {
+                            color: "blue",
+                            weight: 2,
+                            fillOpacity: 0.4 // Đặt độ trong suốt
+                        };
+                    }
+                }).addTo(map);
+            })
+            .catch(error => {
+                console.error("Error loading GeoJSON file:", error);
+            });
     </script>
 </body>
 </html>
