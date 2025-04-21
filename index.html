@@ -1,94 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>WebGIS Hanoi - Chọn Vị Trí</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://unpkg.com/leaflet-geopackage@latest/dist/leaflet-geopackage.min.js"></script>
-
-
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-
-  <style>
-    #map {
-      height: 100vh;
-      width: 100%;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGIS Vietnam Provinces</title>
+    <!-- Thư viện CSS của Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Thư viện CSS của leaflet-geopackage -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <style>
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+    </style>
+    <!-- Thư viện JS của Leaflet -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Thư viện JS của leaflet-geopackage -->
+    <script src="https://unpkg.com/leaflet-geopackage@latest/dist/leaflet-geopackage.min.js"></script>
 </head>
 <body>
-  <div id="map"></div>
+    <div id="map"></div>
+    <script>
+        // Khởi tạo bản đồ
+        var map = L.map('map').setView([21.0285, 105.8542], 13); // Tọa độ Hà Nội, zoom level 13
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+        // Thêm tile layer (OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-  <script>
-    // Tạo bản đồ trung tâm ở Hà Nội
-    var map = L.map('map').setView([21.0285, 105.8542], 13);
+        // Thêm marker cho Hà Nội
+        var marker = L.marker([21.0285, 105.8542]).addTo(map);
+        marker.bindPopup("<b>Hà Nội</b>").openPopup();
 
-    // Lớp nền OSM
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+        // Đường dẫn tới file GeoPackage (Thay đổi URL dưới đây cho đúng với đường dẫn file của bạn)
+        var geoPackageUrl = 'https://nguyenhue266.github.io/Vietnam_Provinces.jgpkg'; // Thay đổi URL này cho đúng với URL của file trên GitHub
 
-    // Marker mặc định ở Hà Nội
-    var marker = L.marker([21.0285, 105.8542]).addTo(map)
-      .bindPopup("Hà Nội").openPopup();
+        // Sử dụng leaflet-geopackage để tải file GeoPackage và hiển thị trên bản đồ
+        var geopackageLayer = L.geoPackage({
+            file: geoPackageUrl,
+            onEachFeature: function (feature, layer) {
+                layer.bindPopup(feature.properties.name);  // Hiển thị tên tỉnh khi click vào
+            }
+        }).addTo(map);
 
-    // Tạo thanh tìm kiếm
-    L.Control.geocoder({
-      defaultMarkGeocode: true
-    }).addTo(map);
-
-    // Cho phép chọn vị trí mới bằng click
-    map.on('click', function(e) {
-      var lat = e.latlng.lat.toFixed(6);
-      var lng = e.latlng.lng.toFixed(6);
-
-      // Xóa marker cũ nếu có
-      if (marker) {
-        map.removeLayer(marker);
-      }
-
-      // Thêm marker mới
-      marker = L.marker([lat, lng]).addTo(map)
-        .bindPopup("Vị trí đã chọn:<br>Lat: " + lat + "<br>Lng: " + lng)
-        .openPopup();
-      <script>
-    // Khởi tạo bản đồ
-    var map = L.map('map').setView([21.0285, 105.8542], 13); // Tọa độ Hà Nội, zoom level 13
-
-    // Thêm tile layer (OpenStreetMap)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    // Thêm marker cho Hà Nội
-    var marker = L.marker([21.0285, 105.8542]).addTo(map);
-    marker.bindPopup("<b>Hà Nội</b>").openPopup();
-
-    // Đường dẫn đến file GeoPackage của bạn (Thay đổi URL dưới đây cho đúng với đường dẫn file của bạn)
-    var geoPackageUrl = 'https://nguyenhue266.github.io/your_folder/Vietnam_Provinces.jgpkg';  // Thay đường dẫn đúng tới file của bạn
-
-    // Sử dụng leaflet-geopackage để tải file GeoPackage và hiển thị trên bản đồ
-    var geopackageLayer = L.geoPackage({
-        file: geoPackageUrl,
-        onEachFeature: function (feature, layer) {
-            // Hiển thị thông tin tỉnh khi người dùng click vào
-            layer.bindPopup(feature.properties.name);  // Chỉnh sửa tùy ý thông tin muốn hiển thị
-        }
-    }).addTo(map);
-
-    // Thêm độ trong suốt cho lớp GeoPackage nếu muốn
-    geopackageLayer.setStyle({
-        fillOpacity: 0.4  // Độ trong suốt của các tỉnh
-    });
-</script>
-
-    });
-  </script>
+        // Đặt độ trong suốt cho lớp GeoPackage
+        geopackageLayer.setStyle({
+            fillOpacity: 0.4  // Độ trong suốt của các tỉnh, bạn có thể thay đổi giá trị này từ 0 (trong suốt hoàn toàn) đến 1 (không trong suốt)
+        });
+    </script>
 </body>
 </html>
