@@ -45,6 +45,11 @@
             .catch(error => {
                 console.error("Error loading GeoJSON file:", error);
             });
+
+        // Thêm thanh tìm kiếm
+        L.Control.geocoder({
+            defaultMarkGeocode: true
+        }).addTo(map);
     </script>
 </body>
 </html>
