@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>WebGIS Vietnam Provinces</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <style>
@@ -17,33 +16,27 @@
 </head>
 <body>
   <div id="map"></div>
-
   <script>
-    // Khởi tạo bản đồ, zoom toàn Việt Nam
-    var map = L.map('map').setView([16.0471, 108.206], 6);
+    // Khởi tạo bản đồ trung tâm Việt Nam
+    var map = L.map('map').setView([16.0471, 108.2062], 6);
 
-    // Thêm nền bản đồ OSM
+    // Thêm lớp nền OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // Đường dẫn file GeoJSON (raw link từ GitHub)
-    var geojsonUrl = 'https://raw.githubusercontent.com/nguyenhue266/nguyenhue266.github.io/main/vietnamprovinces.geojson';
+    // Đường dẫn đến file GeoJSON
+    var geojsonUrl = 'https://raw.githubusercontent.com/nguyenhue266/nguyenhue266.github.io/main/j.geojson';
 
-    // Load và hiển thị dữ liệu GeoJSON
+    // Tải và hiển thị lớp GeoJSON
     fetch(geojsonUrl)
       .then(response => response.json())
       .then(data => {
         L.geoJSON(data, {
           style: {
-            color: "red",
+            color: 'red',
             weight: 2,
-            fillColor: "yellow",
-            fillOpacity: 0.2
-          },
-          onEachFeature: function (feature, layer) {
-            var name = feature.properties.name || "Không rõ tên";
-            layer.bindPopup(name);
+            fillOpacity: 0.3
           }
         }).addTo(map);
       })
@@ -52,9 +45,7 @@
       });
 
     // Thêm thanh tìm kiếm
-    L.Control.geocoder({
-      defaultMarkGeocode: true
-    }).addTo(map);
+    L.Control.geocoder().addTo(map);
   </script>
 </body>
 </html>
