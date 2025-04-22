@@ -5,43 +5,67 @@
     <title>WebGIS - Hồ Bảo Linh</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <style>
-        #map {
-            height: 100vh;
-            width: 100%;
-        }
-    </style>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 </head>
 <body>
-    <div id="map"></div>
+    <div id="map" style="height: 100vh;"></div>
 
     <script>
-        // Khởi tạo bản đồ
-        var map = L.map('map').setView([21.0285, 105.8542], 13); // Có thể chỉnh lại theo vị trí Hồ Bảo Linh
+        // Base maps
+        var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        });
 
-        // Lớp nền OSM
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
+        var satellite = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+            attribution: '© Google Satellite'
+        });
+
+        var topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            maxZoom: 17,
+            attribution: '© OpenTopoMap'
+        });
+
+        // Khởi tạo bản đồ
+        var map = L.map('map', {
+            center: [21.0285, 105.8542], // chỉnh sửa nếu biết tọa độ hồ
+            zoom: 13,
+            layers: [osm] // default base layer
+        });
+
+        // Thêm thanh tìm kiếm địa điểm
+        L.Control.geocoder().addTo(map);
+
+        // Thêm overlay hồ Bảo Linh từ GitHub (link RAW)
+        var hoBaoLinhLayer = L.geoJSON(null, {
+            style: {
+                color: "blue",
+                fillColor: "lightblue",
+                fillOpacity: 0.6,
+                weight: 2
+            }
         }).addTo(map);
 
-        // Link RAW GeoJSON
-        var geojsonUrl = 'https://raw.githubusercontent.com/nguyenhue266/nguyenhue266.github.io/main/ho%20bao%20linh.geojson';
-
-        // Thêm layer hồ Bảo Linh
-        fetch(geojsonUrl)
+        fetch('https://raw.githubusercontent.com/nguyenhue266/nguyenhue266.github.io/main/ho%20bao%20linh.geojson')
             .then(res => res.json())
-            .then(data => {
-                L.geoJSON(data, {
-                    style: {
-                        color: "blue",
-                        fillColor: "lightblue",
-                        fillOpacity: 0.6,
-                        weight: 2
-                    }
-                }).addTo(map);
-            })
-            .catch(err => console.error("Lỗi tải GeoJSON:", err));
+            .then(data => hoBaoLinhLayer.addData(data))
+            .catch(err => console.error("Lỗi tải hồ Bảo Linh:", err));
+
+        // Thêm layer control để chọn base map
+        var baseMaps = {
+            "OpenStreetMap": osm,
+            "Satellite": satellite,
+            "Topographic": topo
+        };
+
+        var overlayMaps = {
+            "Hồ Bảo Linh": hoBaoLinhLayer
+        };
+
+        L.control.layers(baseMaps, overlayMaps).addTo(map);
     </script>
 </body>
 </html>
