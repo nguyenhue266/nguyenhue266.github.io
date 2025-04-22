@@ -13,62 +13,62 @@
 <body>
   <div id="map"></div>
 
+  <!-- Leaflet core -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- Geocoder -->
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
   <script>
+    var map = L.map('map').setView([21.0285, 105.8542], 10); // Hà Nội
+
     // Base layers
     var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap'
-    });
-
-    var topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenTopoMap',
-      maxZoom: 17
-    });
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
 
     var satellite = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-      subdomains:['mt0','mt1','mt2','mt3'],
-      maxZoom: 20,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
       attribution: '&copy; Google Satellite'
     });
 
-    var map = L.map('map', {
-      center: [21.0285, 105.8542],
-      zoom: 13,
-      layers: [osm]
+    var topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenTopoMap contributors'
     });
 
-    // Add geocoder
-    L.Control.geocoder().addTo(map);
-
-    // Load GeoJSON layer (Hồ Bảo Linh)
-    var hoBaoLinhLayer = L.geoJSON(null, {
+    // Bao Linh Lake GeoJSON
+    var baoLinhLayer = L.geoJSON(null, {
       style: {
-        color: "blue",
-        fillColor: "lightblue",
-        fillOpacity: 0.6,
-        weight: 3
+        color: 'blue',
+        fillColor: 'lightblue',
+        fillOpacity: 0.5,
+        weight: 2
       }
     }).addTo(map);
 
-    fetch('https://raw.githubusercontent.com/nguyenhue266/nguyenhue266.github.io/main/ho%20bao%20linh.geojson')
+    fetch('https://nguyenhue266.github.io/ho%20bao%20linh.geojson')
       .then(res => res.json())
-      .then(data => hoBaoLinhLayer.addData(data))
-      .catch(err => console.error("GeoJSON error:", err));
+      .then(data => {
+        baoLinhLayer.addData(data);
+        map.fitBounds(baoLinhLayer.getBounds());
+      });
 
-    // Layers control
+    // Layer control
     var baseLayers = {
       "OpenStreetMap": osm,
-      "Topo": topo,
-      "Satellite": satellite
+      "Satellite": satellite,
+      "Topographic": topo
     };
 
     var overlays = {
-      "Hồ Bảo Linh": hoBaoLinhLayer
+      "Hồ Bảo Linh": baoLinhLayer
     };
 
     L.control.layers(baseLayers, overlays).addTo(map);
+
+    // Search
+    L.Control.geocoder({
+      defaultMarkGeocode: true
+    }).addTo(map);
   </script>
 </body>
 </html>
