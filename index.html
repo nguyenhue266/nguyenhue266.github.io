@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>WebGIS - Hồ Bảo Linh</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebGIS Vietnam Provinces</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <style>
         #map {
             height: 100vh;
@@ -16,47 +15,33 @@
 </head>
 <body>
     <div id="map"></div>
+
     <script>
         // Khởi tạo bản đồ
-        var map = L.map('map').setView([21.0285, 105.8542], 13); // Tọa độ Hà Nội
+        var map = L.map('map').setView([21.0285, 105.8542], 13); // Có thể chỉnh lại theo vị trí Hồ Bảo Linh
 
-        // Thêm tile layer (OpenStreetMap)
+        // Lớp nền OSM
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        // Đường dẫn đến file GeoJSON đã tải lên GitHub
-        var geojsonUrl = 'https://nguyenhue266.github.io/j.geojson'; // Đảm bảo đường dẫn chính xác
+        // Link RAW GeoJSON
+        var geojsonUrl = 'https://raw.githubusercontent.com/nguyenhue266/nguyenhue266.github.io/main/ho%20bao%20linh.geojson';
 
-        // Tải và hiển thị GeoJSON trên bản đồ
+        // Thêm layer hồ Bảo Linh
         fetch(geojsonUrl)
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
-                // Hiển thị lớp GeoJSON mới lên trên bản đồ
-                var geojsonLayer = L.geoJSON(data, {
-                    style: function (feature) {
-                        return {
-                            color: "red", // Đổi màu viền thành đỏ
-                            weight: 50, // Độ dày của viền
-                            opacity: 1 // Độ mờ của viền
-                        };
-                    },
-                    onEachFeature: function (feature, layer) {
-                        layer.bindPopup("<strong>" + feature.properties.name + "</strong>");
+                L.geoJSON(data, {
+                    style: {
+                        color: "blue",
+                        fillColor: "lightblue",
+                        fillOpacity: 0.6,
+                        weight: 2
                     }
-                }).addTo(map); // Thêm lớp vào bản đồ
-
-                // Đảm bảo lớp GeoJSON này sẽ nằm trên đầu
-                map.addLayer(geojsonLayer);
+                }).addTo(map);
             })
-            .catch(error => {
-                console.error("Error loading GeoJSON file:", error);
-            });
-
-        // Thêm thanh tìm kiếm
-        L.Control.geocoder({
-            defaultMarkGeocode: true
-        }).addTo(map);
+            .catch(err => console.error("Lỗi tải GeoJSON:", err));
     </script>
 </body>
 </html>
