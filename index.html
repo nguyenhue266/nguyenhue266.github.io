@@ -1,74 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WebGIS - Hồ Bảo Linh</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+  <meta charset="utf-8" />
+  <title>Simple WebGIS - Hobaoling</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
   <style>
-    #map { height: 100vh; width: 100%; }
+    html, body, #map {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
   </style>
 </head>
 <body>
   <div id="map"></div>
 
-  <!-- Leaflet core -->
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <!-- Geocoder -->
-  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    var map = L.map('map').setView([21.0285, 105.8542], 10); // Hà Nội
+    // Tạo bản đồ nền
+    var map = L.map('map').setView([16.5, 107.5], 7);
 
-    // Base layers
-    var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
+    // Lớp nền OSM
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    var satellite = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-      attribution: '&copy; Google Satellite'
-    });
-
-    var topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenTopoMap contributors'
-    });
-
-    // Bao Linh Lake GeoJSON
-    var baoLinhLayer = L.geoJSON(null, {
-      style: {
-        color: 'blue',
-        fillColor: 'lightblue',
-        fillOpacity: 0.5,
-        weight: 2
-      }
-    }).addTo(map);
-
-    fetch('https://nguyenhue266.github.io/ho%20bao%20linh.geojson')
+    // Load file GeoJSON tại chỗ
+    fetch('hobaolinh.geojson')
       .then(res => res.json())
       .then(data => {
-        baoLinhLayer.addData(data);
-        map.fitBounds(baoLinhLayer.getBounds());
+        var geoLayer = L.geoJSON(data, {
+          style: {
+            color: 'blue',
+            weight: 1.5,
+            fillColor: 'cyan',
+            fillOpacity: 0.4
+          },
+          onEachFeature: function (feature, layer) {
+            const name = feature.properties.VARNAME_3 || 'No name';
+            layer.bindPopup(`<b>${name}</b>`);
+          }
+        }).addTo(map);
+
+        map.fitBounds(geoLayer.getBounds());
       });
-
-    // Layer control
-    var baseLayers = {
-      "OpenStreetMap": osm,
-      "Satellite": satellite,
-      "Topographic": topo
-    };
-
-    var overlays = {
-      "Hồ Bảo Linh": baoLinhLayer
-    };
-
-    L.control.layers(baseLayers, overlays).addTo(map);
-
-    // Search
-    L.Control.geocoder({
-      defaultMarkGeocode: true
-    }).addTo(map);
   </script>
 </body>
 </html>
