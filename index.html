@@ -66,7 +66,7 @@
         // Style function for each commune based on population density
         function style(feature) {
             return {
-                fillColor: getColor(feature.properties.pop_density),
+                fillColor: getColor(feature.properties.pop_density),  // Use population density for color
                 weight: 2,
                 opacity: 1,
                 color: 'white',
