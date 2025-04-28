@@ -64,22 +64,31 @@
             };
         }
 
+        // Hàm để tạo nhãn với màu sắc phù hợp
+        function onEachFeature(feature, layer) {
+            const name = feature.properties.name || feature.properties.NAME_3;
+            const density = feature.properties.population_density;
+            const labelColor = getColor(density);  // Lấy màu từ mật độ dân số
+
+            // Gắn nhãn cho xã với màu sắc dựa trên mật độ dân số
+            layer.bindTooltip(`${name}`, {
+                permanent: true,
+                direction: 'center',
+                className: 'labelstyle',
+                opacity: 1,
+                style: { color: labelColor }  // Đặt màu nhãn theo mật độ dân số
+            });
+
+            layer.bindPopup(`<b>${name}</b><br>Mật độ dân số: ${density} người/km²`);
+        }
+
         // Load file GeoJSON
         fetch('Gibhub Thanh Bình.geojson') // thay tên đúng file của bạn
             .then(response => response.json())
             .then(data => {
                 const layer = L.geoJson(data, {
                     style: style,
-                    onEachFeature: function (feature, layer) {
-                        const name = feature.properties.name || feature.properties.NAME_3;
-                        const density = feature.properties.population_density;
-                        layer.bindTooltip(`${name}`, {
-                            permanent: true,
-                            direction: 'center',
-                            className: 'labelstyle'
-                        });
-                        layer.bindPopup(`<b>${name}</b><br>Mật độ dân số: ${density} người/km²`);
-                    }
+                    onEachFeature: onEachFeature  // Gọi hàm này khi load dữ liệu
                 }).addTo(map);
 
                 map.fitBounds(layer.getBounds());
