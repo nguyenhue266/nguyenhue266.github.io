@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebGIS Q2 midterm2 of student - ID. Study area: Thanh Bình, Đồng Tháp</title>
+    <title>WebGIS Q2 midterm2 of student - ID:2306060018. Study area: Thanh Bình, Đồng Tháp</title>
     <!-- Include Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
@@ -82,8 +82,8 @@
                 L.geoJson(data, {
                     style: style,
                     onEachFeature: function (feature, layer) {
-                        // Add labels for each commune
-                        layer.bindTooltip(feature.properties.name, {
+                        // Bind tooltip to display commune name
+                        layer.bindTooltip(feature.properties.NAME_3 || "Tên xã không có", {
                             permanent: true, direction: 'center', className: 'labelstyle'
                         });
                     }
